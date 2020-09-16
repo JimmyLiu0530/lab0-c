@@ -12,8 +12,13 @@
 queue_t *q_new()
 {
     queue_t *q = malloc(sizeof(queue_t));
-    /* TODO: What if malloc returned NULL? */
+
+    if (!q)
+        return NULL;
+
     q->head = NULL;
+    q->tail = NULL;
+    q->size = 0;
     return q;
 }
 
@@ -21,6 +26,15 @@ queue_t *q_new()
 void q_free(queue_t *q)
 {
     /* TODO: How about freeing the list elements and the strings? */
+    if (!q)
+        return;
+
+    while (q->head) {
+        list_ele_t *tmp = q->head;
+        q->head = q->head->next;
+        free(tmp->value);
+        free(tmp);
+    }
     /* Free queue structure */
     free(q);
 }
@@ -56,6 +70,8 @@ bool q_insert_tail(queue_t *q, char *s)
     /* TODO: You need to write the complete code for this function */
     /* Remember: It should operate in O(1) time */
     /* TODO: Remove the above comment when you are about to implement. */
+
+
     return false;
 }
 
