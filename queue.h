@@ -25,8 +25,9 @@ typedef struct ELE {
 /* Queue structure */
 typedef struct {
     list_ele_t *head; /* Linked list of elements */
-    list_ele_t *tail;
-    int size;
+    list_ele_t *tail; /* Since q_insert_tail() has to be in O(1), this pointer
+                         is needed */
+    int size; /* Since q_size() has to be in O(1), this pointer is needed */
 } queue_t;
 
 /* Operations on queue */

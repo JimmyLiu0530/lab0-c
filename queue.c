@@ -119,9 +119,16 @@ bool q_insert_tail(queue_t *q, char *s)
  */
 bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
 {
-    /* TODO: You need to fix up this code. */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q || !q->head)
+        return false;
+
+    snprintf(sp, bufsize, "%s", q->head->value);
+    list_ele_t *tmp = q->head;
     q->head = q->head->next;
+    free(tmp->value);
+    free(tmp);
+    q->size--;
+
     return true;
 }
 
@@ -131,6 +138,8 @@ bool q_remove_head(queue_t *q, char *sp, size_t bufsize)
  */
 int q_size(queue_t *q)
 {
+    if (!q || !q->head)
+        return 0;
     return q->size;
 }
 
@@ -143,8 +152,76 @@ int q_size(queue_t *q)
  */
 void q_reverse(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q || !q->head)
+        return;
+
+    q->tail = q->head;
+    list_ele_t *cursor = NULL;
+    list_ele_t *head = q->head;
+    while (head) {
+        list_ele_t *next = head->next;
+        head->next = cursor;
+        cursor = head;
+        head = next;
+    }
+    q->head = cursor;
+}
+
+void MoveNode(list_ele_t **dest, list_ele_t **src)
+{
+    list_ele_t *tmp = *src;
+    *src = tmp->next;  // src sublist goes forward
+    tmp->next = *dest;
+    *dest = tmp;
+}
+
+list_ele_t *merge(list_ele_t *ll, list_ele_t *rl)
+{
+    list_ele_t *res = NULL;
+    list_ele_t **indirect = &res;
+
+    while (1) {
+        if (!ll) {
+            *indirect = rl;
+            break;
+        } else if (!rl) {
+            *indirect = ll;
+            break;
+        }
+        if (strcmp(ll->value, rl->value) <= 0)
+            MoveNode(indirect, &ll);
+        else
+            MoveNode(indirect, &rl);
+
+        indirect = &((*indirect)->next);
+    }
+    return res;
+}
+
+list_ele_t *mergeSort(list_ele_t *head)
+{
+    if (!head || !head->next)
+        return head;
+
+    // divide into two halves
+    list_ele_t *twoStep = head->next;
+    list_ele_t *oneStep = head;
+
+    while (twoStep) {
+        twoStep = twoStep->next;
+        if (twoStep) {
+            twoStep = twoStep->next;
+            oneStep = oneStep->next;
+        }
+    }
+    twoStep = oneStep->next;
+    oneStep->next = NULL;
+
+    // recursively call mergeSort
+    list_ele_t *ll = mergeSort(head);
+    list_ele_t *rl = mergeSort(twoStep);
+    // merge two ordered lists
+    return merge(ll, rl);
 }
 
 /*
@@ -154,6 +231,11 @@ void q_reverse(queue_t *q)
  */
 void q_sort(queue_t *q)
 {
-    /* TODO: You need to write the code for this function */
-    /* TODO: Remove the above comment when you are about to implement. */
+    if (!q || !q->head || q->size == 1)
+        return;
+
+    q->head = mergeSort(q->head);
+    // update q->tail
+    while (q->tail->next)
+        q->tail = q->tail->next;
 }
