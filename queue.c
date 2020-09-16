@@ -81,12 +81,14 @@ bool q_insert_head(queue_t *q, char *s)
  * Argument s points to the string to be stored.
  * The function must explicitly allocate space and copy the string into it.
  */
+
 bool q_insert_tail(queue_t *q, char *s)
 {
     if (!q)
         return false;
 
-    list_ele_t *newEle = malloc(sizeof(list_ele_t));
+    list_ele_t *newEle;
+    newEle = malloc(sizeof(list_ele_t));
     if (!newEle)
         return false;
 
@@ -99,13 +101,13 @@ bool q_insert_tail(queue_t *q, char *s)
     snprintf(newEle->value, length, "%s", s);
     newEle->next = NULL;
     q->size++;
-    /*newEle is the first element in queue*/
+    // newEle is the first element in queue
     if (!q->tail) {
         q->head = newEle;
+    } else {
+        q->tail->next = newEle;
     }
-    q->tail->next = newEle;
     q->tail = newEle;
-
     return true;
 }
 
